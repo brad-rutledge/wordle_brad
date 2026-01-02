@@ -1,0 +1,31 @@
+
+name: Build words.json (SCOWL + ENABLE)
+
+on:
+  workflow_dispatch:      # Adds "Run workflow" button in Actions tab
+  push:
+    paths:
+      - build_words.py
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { persist-credentials: true }
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Build words.json
+        run: python build_words.py
+
+      - name: Commit words.json
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "actions@github.com"
+          git add words.json
+          git commit -m "Build: words.json from SCOWL + ENABLE" || echo "No changes to commit"
+          git push
